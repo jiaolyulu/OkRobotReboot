@@ -6,9 +6,9 @@ var prompt = require("prompt-sync")(); // "npm install prompt-sync"
 
 //Speaking function
 function say(something) {
-  var APIkey = "4FMhwULmsPcrS8XI-zOn7ng3aHbobBqIGYKE9nlddnYD";
+  var APIkey = "[your Watson APIKey]";
   var url =
-    "https://api.us-east.text-to-speech.watson.cloud.ibm.com/instances/322a0578-2938-4e4b-bc87-c9d50405b99b";
+    "[your Watson URL]";
   var data = encodeURIComponent(something);
   command = util.format(
     'curl -X GET -u "apikey:%s" --output say.mp3 "%s/v1/synthesize?accept=audio/mp3&text="%s"&%s" && afplay say.mp3 ',
