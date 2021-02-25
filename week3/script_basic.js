@@ -130,7 +130,7 @@ document.getElementById("start").onclick = function(){
   // var question1=document.getElementById("question1");
   // question1.textContent="This is the ATM and I can do a lot of things. What’s the name of the account?";
   // historyConvo += question1.textContent + "<br />";
-  say("This is the Smart ATM bot and I can do a lot of things. What’s the name of the account?");
+  say("This is the Smart ATM bot and I can do a lot of things. What’s the name of the account? ");
   document.getElementById("start").style.display = "none";
   document.getElementById("name").style.display = "block";
 }
