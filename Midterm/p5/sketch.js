@@ -5,7 +5,7 @@ chair.listVoices();
 let sitTimer = 0;
 let awayTimer = 0;
 let lastSitTimer = 0;
-let lastAwayTimer = 2000;
+let lastAwayTimer = 40000;
 let lastCommandTimer = 0;
 let sit = false;
 let away = false;
@@ -15,12 +15,13 @@ let niceMode = false;
 let cNice = niceMode;
 let masaged = false;
 let chances = [1];
+let framerate = 60;
 
 //Bad Chair Script
 let modeA_bad = ["Hey, you, I’m tired. Move your ass off me now.", "Maybe you enjoy working over hours, but I don’t, ok? Way past my working hours, I need a break."];
 let modeB_bad = ["Lost mind and hearing in your work? I need a break now", "Let’s go, chop-chop, move", "Your ass is overheating my face"];
 let modeC_bad = ["Hey, where do you think you are going? Give me a back massage", "Don’t you think you should massage my back a little after all I’ve done for you?"];
-let modeC1_bad = [""];
+let modeC1_bad = ["placeholder"];
 let modeC2_bad = [""];
 let modeD_bad = ["O!M!G you call that a break? Go enjoy your life a little longer", "Jesus too soon, I’m only at my third cig. Come back later", "I think I need a longer break. From you. byeeee"];
 let modeE_bad = ["Hello? Anyone here? I’m abandoned!", "I'm tired of entertaining myself, time to come back!", "AAAAAAAAAAAAAAAAA! AAAAAAAAAAAAAA! AAAAAAAAAAAA!", "I! NEED! YOU! TO! COME! BACK! TO! ME! NOW!", "ME! ME! ME! ME! ME! ME! ME!"];
@@ -45,8 +46,8 @@ let modeH_nice = ["Keep up the good posture"];
 function setup() {
   createCanvas(400, 400);
   background(220);
-  frameRate(60);
-  for (let i = 1; i<5; i++){
+  frameRate(framerate);
+  for (let i = 1; i<15; i++){
     chances[i] = 0;
   }
 }
@@ -60,8 +61,13 @@ function draw() {
   }
 
 
-  //Detecting distance to the back
 
+  //Detecting distance to the back
+  if (mouseX<50){  //<< Change mouseX to reading from the sensor 
+    leanOn = true;
+  }else{
+    leanOn = false;
+  }
 
   //Detecting if masaging or not
 
@@ -88,19 +94,19 @@ function draw() {
 
   if (sit){
     //---Sitting---
-    if (sitTimer == 10*60*frameRate()){                                 //A. A user sitting down for too long - Sitting over 10 min
+    if (sitTimer == 10*60*framerate){                                 //A. A user sitting down for too long - Sitting over 10 min
       modeA(); // mode A
       lastCommandTimer = sitTimer;
-    } else if (sitTimer > lastCommandTimer+(2*60*frameRate())){         //B. If the user hasn’t moved as asked  - after 2 min
+    } else if (sitTimer == lastCommandTimer+(2*60*framerate)){         //B. If the user hasn’t moved as asked  - Every 2 min
       modeB(); //mode B
       lastCommandTimer = sitTimer;
     }
 
     //---Coming back---
-    if (lastAwayTimer < 10*60*frameRate() && lastAwayTimer != 0){       //D. If the user came back too soon - Come back withtin 10 min
+    if (lastAwayTimer < 10*60*framerate && lastAwayTimer != 0){        //D. If the user came back too soon - Came back withtin 10 min
       lastAwayTimer = 0;
       modeD(); //Mode D
-    } else if (lastAwayTimer >15*60 && lastAwayTimer != 0){             //F. The user comes back after a long break -Come back after 15 min 
+    } else if (lastAwayTimer > 10*60*framerate && lastAwayTimer != 0){ //F. The user comes back after a long break -Came back after 10 min 
       lastAwayTimer = 0;
       modeF(); //Mode F                        
     }
@@ -128,13 +134,13 @@ function draw() {
       modeC2(); // Mode C.2
       lastCommandTimer = awayTimer;
       masaged = false;
-    } else if (awayTimer == lastCommandTimer + 10*frameRate() && awayTimer < 20*frameRate() && !cNice && !masaged ){       //C.1. User left without masaging
+    } else if (awayTimer == lastCommandTimer + 5*framerate && awayTimer < 11*framerate && !cNice && !masaged ){       //C.1. User left without masaging - 5 second after, repeat once
       modeC1(); //Mode C.1
       lastCommandTimer = awayTimer;
     }
 
     //---Need attention---
-    if (awayTimer > lastCommandTimer+(10*60*frameRate()) && awayTimer < 30*60*frameRate()){        //E. If the user has been away for too long - Away more than 10 min and stops after 30min
+    if (awayTimer == lastCommandTimer+(10*60*framerate) && awayTimer < 30*60*framerate){        //E. If the user has been away for too long - Away more than 10 min and stops after 30min
       modeE(); //Mode E
       lastCommandTimer = awayTimer;
     }
