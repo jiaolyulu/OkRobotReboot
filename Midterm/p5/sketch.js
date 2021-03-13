@@ -143,68 +143,94 @@ function draw() {
 
 function modeA(){
   if(niceMode){
+    niceReaction()
     say(random(modeA_nice));
   }else{
+    badReaction();
     say(random(modeA_bad));
   }
 }
 
 function modeB(){
   if(niceMode){
+    niceReaction()
     say(random(modeB_nice));
   }else{
+    badReaction();
     say(random(modeB_bad));
   }
 }
 function modeC(){
   if(niceMode){
+    niceReaction()
     say(random(modeC_nice));
     cNice = true;
   }else{
+    badReaction();
     say(random(modeC_bad));
     cNice = false;
   }
 }
 function modeC1(){
+  badReaction();
   say(random(modeC1_bad));
 }
 function modeC2(){
   if(niceMode){
+    niceReaction()
     say(random(modeC2_nice));
   }else{
+    badReaction();
     say(random(modeC2_bad));
   }
 }
 function modeD(){
   if(niceMode){
+    niceReaction()
     say(random(modeD_nice));
   }else{
+    badReaction();
     say(random(modeD_bad));
   }
 }
 function modeE(){
+  badReaction();
   say(random(modeE_bad));
 }
 function modeF(){
   if(niceMode){
+    niceReaction()
     say(random(modeF_nice));
   }else{
+    badReaction();
     say(random(modeF_bad));
   }
 }
 function modeG(){
   if(niceMode){
+    niceReaction()
     say(random(modeG_nice));
   }else{
+    badReaction();
     say(random(modeG_bad));
   }
 }
 function modeH(){
   if(niceMode){
+    niceReaction()
     say(random(modeH_nice));
   }else{
+    badReaction();
     say(random(modeH_bad));
   }
+}
+
+function niceReaction(){                //Putting reaction when it's on NICE mode. e.g chaning led to red
+
+}
+
+function badReaction(){                //Putting reaction when it's on BAD mode. e.g chaning led to blue.
+  
 }
 
 function say(something) {
