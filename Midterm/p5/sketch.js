@@ -2,6 +2,28 @@
 var chair = new p5.Speech(); // speech synthesis object
 chair.listVoices();
 
+// The serviceUuid must match the serviceUuid of the device you would like to connect
+const serviceUuid = "19b10010-e8f2-537e-4f6c-d104768a1214";
+const characteristicsUUID = {
+  distance:"cbe230bb-18d0-40cb-99e2-bad41cc46d12",
+  beam:"caa28071-856a-4e5b-b2a9-7e4b1c512b33",
+  mode: "a58c8353-971e-46cf-8f8a-0694c6b72ef2",
+  forceRight: "ac208326-15f9-4ef9-9714-dada07168ce3",
+  forceLeft: "f915b19c-13f6-49c2-a79b-ffef6df27b7f"
+}
+
+let myCharacteristicDistance;
+let myCharacteristicBeam;
+let myCharacteristicMode;
+let myCharacteristicForceRight;
+let myCharacteristicForceLeft;
+let myValueDistance;
+let myValueBeam ;
+let myValueForceRight;
+let myValueForceLeft;
+let myBLE;
+let possibility=15;
+
 let sitTimer = 0;
 let awayTimer = 0;
 let lastSitTimer = 0;
@@ -40,14 +62,18 @@ let modeG_nice = ["Happy to support you in all ways"];
 let modeH_nice = ["Keep up the good posture"];
 
 
-
-
-
 function setup() {
   createCanvas(400, 400);
   background(220);
   frameRate(framerate);
-  for (let i = 1; i<15; i++){
+
+  // Create a p5ble class
+  myBLE = new p5ble();
+  // Create a 'Connect' button
+  const connectButton = createButton('Connect');
+  connectButton.mousePressed(connectToBle);
+
+  for (let i = 1; i<possibility; i++){
     chances[i] = 0;
   }
 }
@@ -60,17 +86,28 @@ function draw() {
     niceMode = true;
   }
 
-
-
   //Detecting distance to the back
-  if (mouseX<50){  //<< Change mouseX to reading from the sensor 
+  if (myValueDistance<50){  //<< Change mouseX to reading from the sensor 
     leanOn = true;
   }else{
     leanOn = false;
   }
 
   //Detecting if masaging or not
+  if (myValueForceRight<60 || myValueForceLeft <60){
+    masaged = true;
+  }else {
+    masaged = false;
+  }
 
+  //Detecting if sitted or not
+  if (myValueBeam){
+    sit = false;
+    away = true;
+  }else{
+    sit = true;
+    away = false;
+  }
 
   //Starting and resetting SIT timmer
   if (sit){
@@ -146,6 +183,8 @@ function draw() {
     }
   }
 }
+
+
 
 function modeA(){
   if(niceMode){
@@ -232,12 +271,84 @@ function modeH(){
 }
 
 function niceReaction(){                //Putting reaction when it's on NICE mode. e.g chaning led to red
-
+  myBLE.write(myCharacteristicMode, false); 
 }
 
 function badReaction(){                //Putting reaction when it's on BAD mode. e.g chaning led to blue.
+  myBLE.write(myCharacteristicMode, true); 
+}
+
+
+
+// A function that will be called once got characteristics
+function gotCharacteristics(error, characteristics) {
+  if (error) console.log('error: ', error);
+  console.log('characteristics: ', characteristics);
+  
+   for(let i = 0; i < characteristics.length;i++){
+    console.log(characteristics[i].uuid,characteristicsUUID.forceLeft);
+    
+    if(characteristics[i].uuid.toString() == characteristicsUUID.distance){
+      myCharacteristicDistance = characteristics[i];
+      myBLE.read(myCharacteristicDistance, gotValueDistance);
+      console.log('gotDistance');
+    }
+    if(characteristics[i].uuid.toString() == characteristicsUUID.beam){
+      myCharacteristicBeam = characteristics[i];
+      myBLE.read(myCharacteristicBeam, gotValueBeam);
+      console.log('gotBeam');
+
+    }
+    if(characteristics[i].uuid.toString() == characteristicsUUID.mode){
+      myCharacteristicMode = characteristics[i];
+      console.log('gotMode');
+    }
+    if(characteristics[i].uuid.toString() == characteristicsUUID.forceRight){
+      myCharacteristicForceRight = characteristics[i];
+      myBLE.read(myCharacteristicForceRight, gotValueForceRight);
+      console.log('gotForceRight');
+    }
+    if(characteristics[i].uuid.toString() == characteristicsUUID.forceLeft){
+      myCharacteristicForceLeft = characteristics[i];
+      myBLE.read(myCharacteristicForceLeft, gotValueForceLeft);
+      console.log('gotForceLeft');
+    }
+
+    }
   
 }
+
+// A function that will be called once got values
+function gotValueDistance(error, value) {
+  if (error) console.log('error: ', error);
+  console.log('distance: ', value);
+  myValueDistance = value;
+  // After getting a value, call p5ble.read() again to get the value again
+  myBLE.read(myCharacteristicDistance, gotValueDistance);
+}
+function gotValueBeam(error, value) {
+  if (error) console.log('error: ', error);
+  console.log('beam: ', value);
+  myValueBeam = value;
+  myBLE.read(myCharacteristicBeam, gotValueBeam);
+
+}
+function gotValueForceRight(error, value) {
+  if (error) console.log('error: ', error);
+  console.log('forceRight: ', value);
+  myValueForceRight = int(map(value,120,235,35,121));
+  
+  // After getting a value, call p5ble.read() again to get the value again
+  myBLE.read(myCharacteristicForceRight,gotValueForceRight);
+}
+function gotValueForceLeft(error, value) {
+  if (error) console.log('error: ', error);
+  console.log('forceLeft: ', value);
+  myValueForceLeft = value;
+  // After getting a value, call p5ble.read() again to get the value again
+  myBLE.read(myCharacteristicForceLeft,gotValueForceLeft);
+}
+
 
 function say(something) {
 	// chair.setVoice(Math.floor(random(chair.voices.length)));  // Randomize the available voices
